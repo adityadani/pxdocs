@@ -29,11 +29,11 @@ Follow [this](https://console.bluemix.net/docs/services/key-protect/index.html#c
 
 - **Base URL [IBM_BASE_URL]**
 
-BaseURL specifies the URL where your Key Protect instance resides. It is region specific. Default value which will be used is: https://keyprotect.us-south.bluemix.net
+BaseURL specifies the URL where your Key Protect instance resides. It is region specific. Default value which will be used is: `https://keyprotect.us-south.bluemix.net`
 
 - **Token URL [IBM_TOKEN_URL]**
 
-Default value which will be used is: https://iam.bluemix.net/oidc/token
+Default value which will be used is: `https://iam.bluemix.net/oidc/token`
 Based on your installation type use the following methods to provide these credentials to Portworx.
 
 ## For Kubernetes Users
@@ -68,7 +68,7 @@ While deploying Portworx using helm chart on an IKS cluster, by default Portworx
 In an non IKS cluster, set the `secretType` as `ibm-kp` in the helm chart's values.yml configuration file.
 
 ##### Using Portworx Spec Generator
-When generating the [Portworx Kubernetes spec file](https://install.portworx.com/), select `IBM Key Protect` from the "Secrets type" list. For more details on how to generate Portworx spec for Kubernetes, refer instructions on [Deploy Portworx on Kubernetes](/scheduler/kubernetes).
+When generating the [Portworx Kubernetes spec file](https://install.portworx.com/), select `IBM Key Protect` from the "Secrets type" list.
 
 #### Existing installation
 
