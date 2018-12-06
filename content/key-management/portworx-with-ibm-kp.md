@@ -12,29 +12,33 @@ Portworx requires the following IBM Key Protect credentials to use its APIs
 
 - **Service Instance ID [IBM_SERVICE_INSTANCE_ID]**
 
-The Instance ID of the IBM Key Protect service can be found by running the following command
-```
-$ ibmcloud resource service-instance <name of your key protect service>
-crn:v1:bluemix:public:kms:us-south:a/fb474855a3e76c1ceblahf57e0f1a9f:0647c737-906d-blah-8a68-2c187e11b29b::
-```
-The ID from the above CRN is `0647c737-906d-blah-8a68-2c187e11b29b`
+    The Instance ID of the IBM Key Protect service can be found by running the following command
+
+    ```text
+    ibmcloud resource service-instance <name of your key protect service>
+    ```
+
+    This should output something like. The ID from the below CRN is `0647c737-906d-blah-8a68-2c187e11b29b`
+    ```
+    crn:v1:bluemix:public:kms:us-south:a/fb474855a3e76c1ceblahf57e0f1a9f:0647c737-906d-blah-8a68-2c187e11b29b::
+    ```
 
 - **Service API Key [IBM_SERVICE_API_KEY]**
 
-Follow [this](https://console.bluemix.net/docs/services/key-protect/access-api.html#access-api) IBM document to retrieve the API Key.
+    Follow [this](https://console.bluemix.net/docs/services/key-protect/access-api.html#access-api) IBM document to retrieve the API Key.
 
 - **Customer Root Key [IBM_CUSTOMER_ROOT_KEY]**
 
-Follow [this](https://console.bluemix.net/docs/services/key-protect/index.html#create-keys) IBM document to create a Customer Root Key
+    Follow [this](https://console.bluemix.net/docs/services/key-protect/index.html#create-keys) IBM document to create a Customer Root Key
 
 - **Base URL [IBM_BASE_URL]**
 
-BaseURL specifies the URL where your Key Protect instance resides. It is region specific. Default value which will be used is: `https://keyprotect.us-south.bluemix.net`
+    BaseURL specifies the URL where your Key Protect instance resides. It is region specific. Default value which will be used is: `https://keyprotect.us-south.bluemix.net`
 
 - **Token URL [IBM_TOKEN_URL]**
 
-Default value which will be used is: `https://iam.bluemix.net/oidc/token`
-Based on your installation type use the following methods to provide these credentials to Portworx.
+    Default value which will be used is: `https://iam.bluemix.net/oidc/token`
+    Based on your installation type use the following methods to provide these credentials to Portworx.
 
 ## For Kubernetes Users
 
@@ -65,10 +69,10 @@ Portworx is going to look for this secret with name `px-ibm` under the `portworx
 
 While deploying Portworx using helm chart on an IKS cluster, by default Portworx is configured to use IBM Key Protect as a secrets provider. Follow [these instructions](https://github.com/portworx/helm/blob/master/charts/portworx/README.md) to install the helm chart.
 
-In an non IKS cluster, set the `secretType` as `ibm-kp` in the helm chart's values.yml configuration file.
+In a non-IKS cluster, set the `secretType` as `ibm-kp` in the helm chart's values.yml configuration file.
 
 ##### Using Portworx Spec Generator
-When generating the [Portworx Kubernetes spec file](https://install.portworx.com/), select `IBM Key Protect` from the "Secrets type" list.
+When generating the [Portworx Kubernetes spec file](https://install.portworx.com/2.0), select `IBM Key Protect` from the "Secrets type" list.
 
 #### Existing installation
 
@@ -78,7 +82,7 @@ For an existing Portworx cluster follow these steps to configure IBM Key Protect
 
 Portworx needs permissions to access the `px-ibm` secret created in Step 1. The following Kubernetes spec grants portworx access to all the secrets defined under the `portworx` namespace
 
-```yaml
+```bash
 cat <<EOF | kubectl apply -f -
 # Namespace to store credentials
 apiVersion: v1
@@ -118,8 +122,8 @@ EOF
 
 Edit the Portworx daemonset `secret_type` field to `ibm-kp`, so that all the new Portworx nodes will also start using IBM Key Protect.
 
-```
-# kubectl edit daemonset portworx -n kube-system
+```text
+kubectl edit daemonset portworx -n kube-system
 ```
 
 Add the `"-secret_type", "ibm-kp"` arguments to the `portworx` container in the daemonset. It should look something like this:
