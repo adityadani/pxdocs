@@ -1,9 +1,9 @@
 ---
 title: Vault
-logo: /logos/vault.png
+logo: /logos/hashicorp-vault.png
 keywords: portworx, containers, storage, vault
 description: Instructions on using Vault key management with Portworx
-weight: 2
+weight: 5
 disableprevnext: true
 series: key-management
 noicon: true

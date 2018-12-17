@@ -3,7 +3,7 @@ title: DC/OS Secrets
 logo: /logos/dcos.png
 keywords: Portworx, containers, storage, dcos
 description: Instructions on using DCOS secrets key management with Portworx
-weight: 4
+weight: 3
 disableprevnext: true
 series: key-management
 noicon: true

@@ -4,6 +4,7 @@ logo: /logos/aws.png
 keywords: Portworx, aws, kms, containers, storage, encryption
 description: Instructions on using AWS KEM key management with Portworx
 disableprevnext: true
+weight: 2
 series: key-management
 noicon: true
 ---
@@ -18,7 +19,7 @@ Supported from PX Enterprise 1.4 onwards
 ### Deploying Portworx {#deploying-portworx}
 
 There are multiple ways in which you can setup Portworx so that it gets authenticated with AWS
-∏
+
 Following are the authentication details required by Portworx to use the AWS KMS service
 
 - `AWS_ACCESS_KEY_ID` : [required] AWS Access Key ID
