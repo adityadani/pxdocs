@@ -7,7 +7,6 @@ description: Instructions on using Google Cloud KMS with Portworx
 disableprevnext: true
 noicon: true
 series: key-management
-hidden: true
 ---
 
 Portworx integrates with Google Cloud KMS to store  Portworx secrets for Volume Encryption and Cloud Credentials. This guide will help configure Portworx with Google Cloud KMS. 

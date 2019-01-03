@@ -4,6 +4,7 @@ weight: 1
 keywords: Portworx, IBM, IBM Key Protect, containers, storage, encryption
 description: Instructions on using IBM Key Protect with Portworx for encrypting PVCs in Kubernetes
 noicon: true
+disableprevnext: true
 series: ibm-key-protect-uses
 ---
 
