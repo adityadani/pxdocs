@@ -3,7 +3,6 @@ title: (Kubernetes) Encrypting PVCs using Google Cloud KMS
 weight: 1
 keywords: Portworx, Google, Google Cloud, KMS, containers, storage, encryption
 description: Instructions on using Google Cloud KMS with Portworx for encrypting PVCs
-disableprevnext: true
 noicon: true
 series: gcloud-secret-uses
 ---
@@ -13,7 +12,7 @@ series: gcloud-secret-uses
 
 ### Encryption using per volume secrets
 
-In this method each volume will use its own unique passphrase to encrypt the volume. Portworx generates a  unique 128 bit passphrase. This passphrase will be used during encryption and decryption.
+In this method each volume will use its own unique passphrase to encrypt the volume. Portworx generates a  unique 128 bit passphrase. This passphrase will be used during encryption and decryption. If you do not wish Portworx to generate passphrases for you, use named secrets as mentioned [here](key-management/gcloud-kms/gcloud-secrets-uses/pvc-enc#encryption-using-named-secrets)
 
 #### Step 1: Create a Storage Class
 
@@ -90,5 +89,42 @@ spec:
 ```
 
 Take a note of the annotation `px/secret-name: default`. This specific annotation indicates Portworx to use the default secret to encrypt the volume. In this case it will **NOT**  create a new passphrase for this volume and NOT use per volume encryption. If the annotation is not provided then Portworx will use the per volume encryption workflow as described in the previous section.
+
+Again, if your Storage Class does not have the `secure` flag set, but you want to encrypt the PVC using the same Storage Class, then add the annotation `px/secure: "true"` to the above PVC.
+
+
+### Encryption using named secrets
+
+In this method Portworx will use the named secret created by you for encrypting and decrypting a volume. To create a named secret follow [this](/key-management/gcloud-kms/#creating-named-secrets) doc
+
+#### Step 1: Create a Storage Class
+
+{{% content "key-management/shared/enc-storage-class-spec.md" %}}
+
+#### Step 2: Create a Persistent Volume Claim
+
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mysql-data
+  annotations:
+    px/secret-name: mysecret
+    volume.beta.kubernetes.io/storage-class: px-secure-sc
+spec:
+  storageClassName: px-mysql-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+```
+
+Take a note of the annotation `px/secret-name: mysecret`. This specific annotation indicates Portworx to use the named secret `mysecret` generated using the Portworx CLI to encrypt the volume. In this case it will **NOT**  create a new passphrase for this volume. If the annotation is not provided then Portworx will use the per volume encryption workflow as described in the previous sections.
+
+{{<info>}}
+**NOTE** A single named secret can be used for encrypting multiple volumes.
+{{</info>}}
 
 Again, if your Storage Class does not have the `secure` flag set, but you want to encrypt the PVC using the same Storage Class, then add the annotation `px/secure: "true"` to the above PVC.
