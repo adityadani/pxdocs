@@ -36,7 +36,7 @@ This metadata drive will be used for storing  internal kvdb data as well as Port
 
 
 {{<info>}}
-**NOTE:** The metadata drive needs to be at least 64Gi in size
+The metadata drive needs to be at least 64Gi in size
 {{</info>}}
 
 This is the recommended method as the disk IO for internal kvdb is not shared with PX volume IO.
@@ -52,7 +52,7 @@ If your scheduler is kubernetes you can designate a set of nodes to run internal
 
 Use the following command to label nodes in kubernetes
 
-```
+```text
 kubectl label nodes <list of node-names> px/metadata-node=true
 ```
 
@@ -79,7 +79,7 @@ The node label logic holds true even during failover, so if a node has a label s
 If the offline node comes back up, it will NOT rejoin the internal kvdb cluster, once another node replaces it.
 
 {{<info>}}
-**NOTE:** Only storage nodes are a part of internal kvdb cluster.
+Only storage nodes are a part of internal kvdb cluster.
 {{</info>}}
 
 
@@ -91,7 +91,7 @@ These internal kvdb backups are taken every 2 minutes and are dumped under the `
 A typical backup file will look like this
 
 ```text
-root@dev:/var/cores/kvdb_backup# ls
+ls /var/cores/kvdb_backup
 pwx_kvdb_schedule_153664_2019-02-06T22:30:39-08:00.dump
 ```
 
@@ -116,7 +116,7 @@ A timestamp is associated with each internal kvdb backup that is taken. Choose o
 
 On the node where the latest backup exists, rename the backup file to `pwx_kvdb_disaster_recovery_golden.dump`.
 
-```
+```text
 cp pwx_kvdb_schedule_153664_2019-02-06T22:30:39-08:00.dump pwx_kvdb_disaster_recovery_golden.dump
 ```
 
