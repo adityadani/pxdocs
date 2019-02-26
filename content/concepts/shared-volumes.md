@@ -1,5 +1,6 @@
 ---
 title: Shared and Sharedv4 Volumes
+linkTitle: Shared Volumes
 description: Explanation on Portworx Shared and Sharedv4 volumes to allow multiple containers access to one volume
 keywords: portworx, PX-Developer, container, Shared Volume, Sharedv4 Volume, NFS, storage
 weight: 4
@@ -21,7 +22,7 @@ A typical pattern is for a single container to have one or more volumes. Convers
 
 {{<info>}}
 **Note:**  
-Usage of shared/sharedv4 volumes for databases is not recommended, since they have a small metadata overhead.
+Usage of shared/sharedv4 volumes for databases is not recommended, since they have a small metadata overhead. Along with that, typical databases do not support concurrent writes to the underlying database at the same time.
 {{</info>}}
 
 
