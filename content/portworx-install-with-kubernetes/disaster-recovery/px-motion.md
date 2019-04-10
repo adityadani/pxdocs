@@ -18,73 +18,16 @@ This will be used to store the credentials for the objectstore.
 * **Network Connectivity**: Ports 9001 and 9010 on the destination cluster should be
 reachable by the source cluster.
 * **Stork helper** : `storkctl` is a command-line tool for interacting with a set of scheduler extensions.
-The following steps can be used to download `storkctl`:
-  * Linux:
+{{% content "portworx-install-with-kubernetes/disaster-recovery/shared/stork-helper.md" %}}
 
-         ```bash
-curl http://openstorage-stork.s3-website-us-east-1.amazonaws.com/storkctl/2.0.0/linux/storkctl -o storkctl &&
-sudo mv storkctl /usr/local/bin &&
-sudo chmod +x /usr/local/bin/storkctl
-         ```
-  * OS X:
-
-         ```bash
-curl http://openstorage-stork.s3-website-us-east-1.amazonaws.com/storkctl/2.0.0/darwin/storkctl -o storkctl &&
-sudo mv storkctl /usr/local/bin &&
-sudo chmod +x /usr/local/bin/storkctl
-         ```
-  * Windows:
-      * Download [storkctl.exe](http://openstorage-stork.s3-website-us-east-1.amazonaws.com/storkctl/2.0.0/windows/storkctl.exe)
-      * Move `storkctl.exe` to a directory in your PATH
 
 ## Pairing clusters
 On Kubernetes you will define a trust object required to communicate with the destination cluster called a ClusterPair. This creates a pairing 
 with the storage driver (Portworx) as well as the scheduler (Kubernetes) so that the volumes and resources, can be migrated between
 clusters.
 
-### Get cluster token from destination cluster
-On the destination cluster, run the following command from one of the Portworx nodes to get the cluster token:
-   `/opt/pwx/bin/pxctl cluster token show`
+{{% content "portworx-install-with-kubernetes/disaster-recovery/shared/cluster-pair.md" %}}
 
-### Generate ClusterPair spec
-Get the **ClusterPair** spec from the destination cluster. This is required to migrate Kubernetes resources to the destination cluster.
-You can generate the template for the spec using `storkctl generate clusterpair -n migrationnamespace remotecluster` on the destination cluster.
-Here, the name (remotecluster) is the Kubernetes object that will be created on the source cluster representing the pair relationship.
-During the actual migration, you will reference this name to identify the destination of your migration
-```
-$ storkctl generate clusterpair -n migrationnamespace remotecluster
-apiVersion: stork.libopenstorage.org/v1alpha1
-kind: ClusterPair
-metadata:
-    creationTimestamp: null
-    name: remotecluster
-    namespace: migrationnamespace
-spec:
-   config:
-      clusters:
-         kubernetes:
-            LocationOfOrigin: /etc/kubernetes/admin.conf
-            certificate-authority-data: <CA_DATA>
-            server: https://192.168.56.74:6443
-      contexts:
-         kubernetes-admin@kubernetes:
-            LocationOfOrigin: /etc/kubernetes/admin.conf
-            cluster: kubernetes
-            user: kubernetes-admin
-      current-context: kubernetes-admin@kubernetes
-      preferences: {}
-      users:
-         kubernetes-admin:
-            LocationOfOrigin: /etc/kubernetes/admin.conf
-            client-certificate-data: <CLIENT_CERT_DATA>
-            client-key-data: <CLIENT_KEY_DATA>
-    options:
-       <insert_storage_options_here>: ""
-status:
-  remoteStorageId: ""
-  schedulerStatus: ""
-  storageStatus: ""
-```
 
 ### Update ClusterPair with storage options
 
@@ -149,14 +92,6 @@ $ storkctl get clusterpair
 NAME               STORAGE-STATUS   SCHEDULER-STATUS   CREATED
 remotecluster      Ready            Ready              26 Oct 18 03:11 UTC
 ```
-
-### Troubleshooting
-If the status is in error state you can describe the clusterpair to get more information
-```
-kubectl describe clusterpair remotecluster
-```
-
-{{<info>}} *Note*: You might need to perform additional steps for [GKE](gke) and [EKS](eks) {{</info>}}
 
 ## Migrating Volumes and Resources
 Once the pairing is configured, applications can be migrated repeatedly to the destination cluster.
@@ -225,72 +160,4 @@ NAME            CLUSTERPAIR     STAGE     STATUS       VOLUMES   RESOURCES   CRE
 mysqlmigration  remotecluster   Final     Successful   1/1       3/3         26 Oct 18 20:04 UTC
 ```
 
-### Troubleshooting
-If there is a failure or you want more information about what resources were migrated you can describe the migration object using kubectl:
-```
-$ kubectl describe migration mysqlmigration
-Name:         mysqlmigration
-Namespace:    migrationnamespace
-Labels:       <none>
-Annotations:  <none>
-API Version:  stork.libopenstorage.org/v1alpha1
-Kind:         Migration
-Metadata:
-  Creation Timestamp:  2018-10-26T20:04:19Z
-  Generation:          1
-  Resource Version:    2148620
-  Self Link:           /apis/stork.libopenstorage.org/v1alpha1/migrations/ctlmigration3
-  UID:                 be63bf72-d95a-11e8-ba98-0214683e8447
-Spec:
-  Cluster Pair:       remotecluster
-  Include Resources:  true
-  Namespaces:
-      migrationnamespace
-  Selectors:           <nil>
-  Start Applications:  true
-Status:
-  Resources:
-    Group:      core
-    Kind:       PersistentVolume
-    Name:       pvc-34bacd62-d7ee-11e8-ba98-0214683e8447
-    Namespace:
-    Reason:     Resource migrated successfully
-    Status:     Successful
-    Version:    v1
-    Group:      core
-    Kind:       PersistentVolumeClaim
-    Name:       mysql-data
-    Namespace:  mysql
-    Reason:     Resource migrated successfully
-    Status:     Successful
-    Version:    v1
-    Group:      apps
-    Kind:       Deployment
-    Name:       mysql
-    Namespace:  mysql
-    Reason:     Resource migrated successfully
-    Status:     Successful
-    Version:    v1
-  Stage:        Final
-  Status:       Successful
-  Volumes:
-    Namespace:                mysql
-    Persistent Volume Claim:  mysql-data
-    Reason:                   Migration successful for volume
-    Status:                   Successful
-    Volume:                   pvc-34bacd62-d7ee-11e8-ba98-0214683e8447
-Events:
-  Type    Reason      Age    From   Message
-  ----    ------      ----   ----   -------
-  Normal  Successful  2m42s  stork  Volume pvc-34bacd62-d7ee-11e8-ba98-0214683e8447 migrated successfully
-  Normal  Successful  2m39s  stork  /v1, Kind=PersistentVolume /pvc-34bacd62-d7ee-11e8-ba98-0214683e8447: Resource migrated successfully
-  Normal  Successful  2m39s  stork  /v1, Kind=PersistentVolumeClaim mysql/mysql-data: Resource migrated successfully
-  Normal  Successful  2m39s  stork  apps/v1, Kind=Deployment mysql/mysql: Resource migrated successfully
-```
-
-## Advanced Operations
-
-* [Migrating to GKE](gke)
-* [Migrating to EKS](eks)
-* [Configuring a namespace as a cluster namespace](cluster-admin-namespace)
-<!--TODO:* [Configuring an external objectstore to be used for migration]-->
+{{% content "portworx-install-with-kubernetes/disaster-recovery/shared/migration-common.md" %}}
