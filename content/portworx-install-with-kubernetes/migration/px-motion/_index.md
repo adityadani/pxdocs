@@ -4,6 +4,7 @@ linkTitle: "PX-Motion with stork"
 keywords: cloud, backup, restore, snapshot, DR, migration, px-motion
 description: How to migrate stateful applications on Kubernetes
 series: px-motion
+noicon: true
 aliases:
   - /cloud-references/migration/migration-stork.html
   - /cloud-references/migration/migration-stork
@@ -29,7 +30,7 @@ clusters.
 {{% content "portworx-install-with-kubernetes/disaster-recovery/shared/cluster-pair.md" %}}
 
 
-### Update ClusterPair with storage options
+#### Update ClusterPair with storage options
 
 In the generated **ClusterPair** spec, you will need to add Portworx clusterpair information under spec.options. The required options are:
 
@@ -76,8 +77,9 @@ status:
 ```
 Copy and save this to a file called clusterpair.yaml on the source cluster.
 
-### Create the ClusterPair
-On the source cluster create the clusterpair by applying the generated spec.
+#### Apply the generated ClusterPair on the source cluster
+
+On the **source** cluster create the clusterpair by applying the generated spec.
 ```
 $ kubectl apply -f clusterpair.yaml
 clusterpair.stork.libopenstorage.org/remotecluster created

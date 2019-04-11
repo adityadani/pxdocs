@@ -1,12 +1,28 @@
 ### Get cluster token from destination cluster
 On the destination cluster, run the following command from one of the Portworx nodes to get the cluster token:
-   `/opt/pwx/bin/pxctl cluster token show`
+```bash
+/opt/pwx/bin/pxctl cluster token show
+```
 
-### Generate ClusterPair spec
-Get the **ClusterPair** spec from the destination cluster. This is required to migrate Kubernetes resources to the destination cluster.
-You can generate the template for the spec using `storkctl generate clusterpair -n migrationnamespace remotecluster` on the destination cluster.
-Here, the name (remotecluster) is the Kubernetes object that will be created on the source cluster representing the pair relationship.
+### Generate and Apply ClusterPair Spec
+
+ClusterPair is a resource that is used to pair the source and destination cluster. It is required to migrate Kubernetes resources between the two clusters. 
+It is generated and used in the following way:
+
+   * The **ClusterPair** spec is generated on the **destination** cluster.
+   * The generated spec is then applied on the **source** cluster
+
+#### Generate ClusterPair on the destination cluster
+
+To generate the **ClusterPair** spec, run the following command on the **destination** cluster
+
+```bash
+storkctl generate clusterpair -n migrationnamespace remotecluster
+```
+Here, the name (remotecluster) is the Kubernetes object that will be created on the **source** cluster representing the pair relationship.
+
 During the actual migration, you will reference this name to identify the destination of your migration
+
 ```
 $ storkctl generate clusterpair -n migrationnamespace remotecluster
 apiVersion: stork.libopenstorage.org/v1alpha1
