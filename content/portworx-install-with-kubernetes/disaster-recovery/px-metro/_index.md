@@ -6,5 +6,5 @@ description: How to achieve DR across two kubernetes cluster spanning a metropol
 ---
 
 Portworx supports synchronous DR when installed as a single stretch cluster across multiple Kubernetes clusters. The Kubernetes clusters need to span across a metropolitan area network with latencies less than 500ms.
-This topic explains how to install such a stretch Portworx cluster and achieve synchronous DR. It will demonstrate how to failover and failback applications between two Kubernetes clusters.
-Follow the steps in this topic in order.
+This document explains how to install such a stretch Portworx cluster and achieve synchronous DR. It will demonstrate how to failover and failback applications between two Kubernetes clusters.
+Here are the steps you should follow:

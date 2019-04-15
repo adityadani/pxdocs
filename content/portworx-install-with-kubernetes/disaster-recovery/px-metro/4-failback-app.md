@@ -9,16 +9,16 @@ Once your unhealthy Kubernetes cluster is back up and running, you would want to
 
 For this section we will refer to,
 
-* **Source Cluster** as the Kubernetes cluster which is back up online and where your applications need to be failback to. (In this example: `cluster_domain: us-east-1a`)
+* **Source Cluster** as the Kubernetes cluster which is back online and where your applications need to failback to. (In this example: `cluster_domain: us-east-1a`)
 * **Destination Cluster** as the Kubernetes cluster where the applications will be failed over. (In this example: `cluster_domain: us-east-1b`)
 
 In order to failback the application, you need to instruct Stork and Portworx that your source Kubernetes cluster is now back up and is active
 
 ### Create a ClusterDomainUpdate CRD
 
- In a YAML, you will specify an object called a ClusterDomainUpdate and we will designate the cluster domain of the source cluster as active
+Start by creating a new file named `clusterdomainupdate.yaml`. In this file, let's specify an object called a ClusterDomainUpdate and designate the cluster domain of the source cluster as active
 
- ```
+ ```text
  apiVersion: stork.libopenstorage.org/v1alpha1
 kind: ClusterDomainUpdate
 metadata:
@@ -34,7 +34,7 @@ spec:
 
 In order to invoke from command-line, you will need to run the following
 
-```
+```text
 # kubectl create -f clusterdomainupdate.yaml
 clusterdomainupdate "activate-us-east-1a" created
 ```
@@ -55,14 +55,14 @@ On the destination cluster, where the applications were failed over in Step 3, y
 
 You can stop the applications from running by changing the replica count of your deployments and statefulsets to 0. 
 
-```
-# kubectl scale --replicas 0 deployment/mysql -n migrationnamespace
+```text
+kubectl scale --replicas 0 deployment/mysql -n migrationnamespace
 deployment "mysql" scaled
 ```
 
 
 ### Start back the application on the source cluster
-After you have stopped the applications on the destination cluster, on the source cluster, you can start back the applications by editing the replica count.
+After you have stopped the applications on the destination cluster, let's jump to the source cluster. Here, we would want to start back the applications by editing the replica count.
 
 ```
 # kubectl scale --replicas 1 deployment/mysql -n migrationnamespace

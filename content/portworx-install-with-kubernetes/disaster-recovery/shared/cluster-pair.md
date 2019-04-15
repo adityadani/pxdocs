@@ -1,12 +1,12 @@
 ### Get cluster token from destination cluster
 On the destination cluster, run the following command from one of the Portworx nodes to get the cluster token:
 ```bash
-/opt/pwx/bin/pxctl cluster token show
+pxctl cluster token show
 ```
 
 ### Generate and Apply ClusterPair Spec
 
-ClusterPair is a resource that is used to pair the source and destination cluster. It is required to migrate Kubernetes resources between the two clusters. 
+In Kubernetes you will define a trust object called **ClusterPair**. This object is required to communicate with the destination cluster. In a nutshell, it creates a pairing with the storage driver (_Portworx_) as well as the scheduler (Kubernetes) so that the volumes and resources can be migrated between clusters.
 It is generated and used in the following way:
 
    * The **ClusterPair** spec is generated on the **destination** cluster.

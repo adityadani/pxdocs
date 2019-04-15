@@ -5,7 +5,7 @@ keywords: cloud, backup, restore, snapshot, DR, migration, px-motion
 description: Find out how to failover an application from one Kubernetes cluster to another.
 ---
 
-In case of a disaster, where one of your Kubernetes cluster goes down and is inaccessible you would want to failover the applications running on it to any other Kubernetes cluster that is operational. 
+In case of a disaster, where one of your Kubernetes clusters goes down and is inaccessible, you would want to failover the applications running on it to an operational Kubernetes cluster. 
 
 For this section we will refer to,
 
@@ -16,7 +16,7 @@ In order to failover the application, you need to instruct Stork and Portworx th
 
 ### Create a ClusterDomainUpdate object
 
- In a YAML, you will specify an object called a ClusterDomainUpdate and you will designate the cluster domain of the source cluster as inactive.
+Let's create a new file named ` clusterdomainupdate.yaml` that specifies an object called `ClusterDomainUpdate` and designates the cluster domain of the source cluster as inactive:
 
  ```bash
 apiVersion: stork.libopenstorage.org/v1alpha1
@@ -32,7 +32,7 @@ spec:
   active: false
  ```
 
-In order to invoke from command-line, you will need to run the following
+In order to invoke from command-line, run the following:
 
 ```
 # kubectl create -f clusterdomainupdate.yaml
@@ -53,7 +53,7 @@ You can see that the cluster domain `us-east-1a` is now **Inactive**
 
 If your source Kubernetes cluster is still alive and is accessible, we recommend you to stop the applications before failing them over to the destination cluster.
 
-You can stop the applications from running by changing the replica count of your deployments and statefulsets to 0. In this way your application resources will persist
+You can stop the applications from running by changing the replica count of your deployments and statefulsets to 0. In this way, your application resources will persist
 in Kubernetes, but the actual application would not be running.
 
 ```

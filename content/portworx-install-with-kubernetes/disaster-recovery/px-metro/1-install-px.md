@@ -8,8 +8,8 @@ description: Find out how to install a single stretch Portworx cluster across mu
 The goal of this doc is to setup a single Portworx cluster that spans across multiple Kubernetes clusters.
 
 ## Pre-requisites
-* **Kubernetes Clusters**: You should have at least two kubernetes clusters which are a part of the same metropolitan area network with a network latency of 500ms between them.
-* **Version**: A single Portworx cluster of v2.1 or later release needs to be installed on both clusters. Also requires stork v2.2+ on both the clusters.
+* **Kubernetes Clusters**: You should have at least two Kubernetes clusters which are a part of the same metropolitan area network with a network latency of 500ms between them.
+* **Version**: A single Portworx cluster of v2.1 or later release needs to be installed on both clusters. Also requires Stork v2.2+ on both the clusters.
 * **Secret Store** : Make sure you have configured a [secret store](/key-management) on both your clusters. This will be used to store the credentials for the objectstore.
 * **Network Connectivity**: Ports between 9001 and 9020 should be open between the two Kubernetes clusters.
 * **External Kvdb**: A kvdb like etcd or consul setup outside of the Kubernetes clusters.
@@ -17,8 +17,8 @@ The goal of this doc is to setup a single Portworx cluster that spans across mul
 {{% content "portworx-install-with-kubernetes/disaster-recovery/shared/stork-helper.md" %}}
 
 ## Installing Portworx
-In this mode of operation, a single portworx cluster will stretch across multiple Kubernetes clusters. To install Portworx on each of these Kubernetes clusters, you will need to generate
-a separate Portworx kubernetes manifest file for each of them using [Portworx Spec Generator]((https://edge-install.portworx.com/))
+In this mode of operation, a single Portworx cluster will stretch across multiple Kubernetes clusters. To install Portworx on each of these Kubernetes clusters, you will need to generate
+a separate Portworx Kubernetes manifest file for each of them using [Portworx Spec Generator]((https://edge-install.portworx.com/))
 
 While generating the spec file for each Kubernetes cluster, make sure you provide the same values for the following arguments:
 
@@ -35,7 +35,7 @@ information needs to be explicitly specified to Portworx through the `-cluster_d
 
 Once you have generated the Kubernetes manifest file, add the `cluster_domain` argument in the args section of the daemonset
 
-```bash
+```text
       containers:
         - name: portworx
           image: portworx/oci-monitor:2.1
@@ -49,13 +49,13 @@ Once you have generated the Kubernetes manifest file, add the `cluster_domain` a
 The value for `cluster_domain` needs to be different for each Kubernetes cluster.
 
   * You can name your cluster domains with arbitrary names like **datacenter1** and **datacenter2** identifying in which Datacenter your Kubernetes clusters are running.
-  * You can name them based of your cloud provider's zone names such as **us-east-1a**, **us-east-1b**.
+  * You can name them based on your cloud provider's zone names such as **us-east-1a**, **us-east-1b**.
 
 {{<info>}}
-**NOTE:** Only deploy Portworx in this mode, when your Kubernetes clusters are separated by a metropolitan area network with a latency of 500ms or less. It is not recommended to run in this mode, if your Kubernetes clusters are across regions like AWS regions `us-east` and `us-west`.
+Only deploy Portworx in this mode when your Kubernetes clusters are separated by a metropolitan area network with a latency of 500ms or less. It is not recommended to run in this mode if your Kubernetes clusters are across regions like AWS regions `us-east` and `us-west`.
 {{</info>}}
 
-A cluster domain and in turn the set of nodes which are a part of that domain are associated with either of the following states:
+A cluster domain and, in turn, the set of nodes which are a part of that domain are associated with either of the following states:
 
 * **Active State**: Nodes from an active cluster domain participate in the cluster activities. Applications **can** be scheduled on the nodes which are a part of an active cluster domain.
 * **Inactive State**: Nodes from an inactive cluster domain do not participate in the cluster activities. Applications **cannot** be scheduled on such nodes.
@@ -64,9 +64,8 @@ Once the Kubernetes manifest is applied on both the clusters, Portworx will form
 
 **Kubernetes Cluster 1 running in `us-east-1a`**
 
-```
-# kubectl get nodes -owide
-NAME                            STATUS    ROLES     AGE       VERSION   EXTERNAL-IP      OS-IMAGE                       KERNEL-VERSION   CONTAINER-RUNTIME
+```text
+kubectl get nodes -o wide
 ip-172-20-33-100.ec2.internal   Ready     node      3h        v1.11.9   18.205.7.13      Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
 ip-172-20-36-212.ec2.internal   Ready     node      3h        v1.11.9   18.213.118.236   Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
 ip-172-20-48-24.ec2.internal    Ready     master    3h        v1.11.9   18.215.34.139    Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
@@ -75,9 +74,8 @@ ip-172-20-59-248.ec2.internal   Ready     node      3h        v1.11.9   34.200.2
 
 **Kubernetes Cluster 2 running in `us-east-1b`**
 
-```
-# kubectl get nodes -owide
-NAME                            STATUS    ROLES     AGE       VERSION   EXTERNAL-IP     OS-IMAGE                       KERNEL-VERSION   CONTAINER-RUNTIME
+```text
+kubectl get nodes -o wide
 ip-172-40-34-140.ec2.internal   Ready     node      3h        v1.11.9   34.204.2.95     Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
 ip-172-40-35-23.ec2.internal    Ready     master    3h        v1.11.9   34.238.44.60    Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
 ip-172-40-40-230.ec2.internal   Ready     node      3h        v1.11.9   52.90.187.179   Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
@@ -122,7 +120,7 @@ root@aditya-dev:~/kops#
 ### Cluster Domains Status 
 
 When stork is deployed with Portworx enabled with cluster domains it creates a new ClusterDomainsStatus CRD object. This can be used to find out the current state of all the cluster domains.
-Each Kubernetes cluster, where stork is deployed will have this object automatically created. You can use the following commands to get the current status
+Each Kubernetes cluster where Stork is deployed will have this object automatically created. You can use the following commands to get the current status:
 
 ```
 # storkctl get clusterdomainsstatus
