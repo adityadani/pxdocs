@@ -17,7 +17,11 @@ The goal of this document is to setup a single Portworx cluster that spans acros
 {{% content "portworx-install-with-kubernetes/disaster-recovery/shared/stork-helper.md" %}}
 
 ## Installing Portworx
-In this mode of operation, a single Portworx cluster will stretch across multiple Kubernetes clusters. To install Portworx on each of these Kubernetes clusters, you will need to generate a separate Portworx Kubernetes manifest file for each of them using [Portworx Spec Generator]((https://edge-install.portworx.com/))
+In this mode of operation, a single Portworx cluster will stretch across multiple Kubernetes clusters. 
+
+### New Installation
+
+To install Portworx on each of the Kubernetes clusters, you will need to generate a separate Portworx Kubernetes manifest file for each of them using [Portworx Spec Generator]((https://install.portworx.com/2.0))
 
 While generating the spec file for each Kubernetes cluster, make sure you provide the same values for the following arguments:
 
@@ -26,12 +30,39 @@ While generating the spec file for each Kubernetes cluster, make sure you provid
 
 Specifying the same **ClusterID** and **Kvdb Endpoints** in each Kubernetes manifest file ensures that a single Portworx cluster will stretch across multiple Kubernetes clusters.
 
+### Existing Installation
+If you already have an existing Kubernetes cluster, you can add another Kubernetes cluster and let its nodes join the same Portworx cluster. 
+
+To achieve this, make sure you provide the following arguments same as your existing cluster:
+
+* **Cluster ID** (Portworx install argument: `-c`)
+* **Kvdb Endpoints**  (Portworx install argument: `-k`)
+
+Specifying the same **ClusterID** and **Kvdb Endpoints** as your existing cluster ensures that a single Portworx cluster will stretch across multiple Kubernetes clusters.
+
+If your Kubernetes clusters have exactly the same configuration you can use the URL specified by the `portworx.com/install-source` annotation on the existing Portworx DaemonSet to fetch the spec for your new cluster:
+
+```
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: portworx
+  namespace: kube-system
+  annotations:
+    portworx.com/install-source: "https://install.portworx.com/2.0?mc=false&kbver=1.11.9&k=etcd%3Ahttp%3A%2F%2F100.26.199.167%3A2379&s=%22type%3Dgp2%2Csize%3D150%22&c=px-cluster-2f6d696f-a728-46ec-bfbc-dcece1765579&stork=true&lh=true&st=k8s"
+```
+
+Otherwise you can always generate a new spec using [Portworx Spec Generator]((https://install.portworx.com/2.0))
+
+{{<info>}}
+**Note**: If your existing Kubernetes cluster uses internal kvdb, then you cannot stretch your Portworx clusters across multiple Kubernetes cluster. This mode of deployments requires an external kvdb running outside your Kubernetes cluster
+{{</info>}}
 
 ### Specifying cluster domain
 A cluster domain identifies a subset of nodes from the stretch Portworx cluster that are a part of the same failure domain. In this case, your Kubernetes clusters are separated across a metropolitan area network and we wish to achieve DR across them. So each Kubernetes cluster and its nodes are one cluster domain. This cluster domain
 information needs to be explicitly specified to Portworx through the `-cluster_domain` install argument.
 
-Once you have generated the Kubernetes manifest file, add the `cluster_domain` argument in the args section of the daemonset
+Once you have generated the Kubernetes manifest file, add the `cluster_domain` argument in the args section of the daemonset. You can also edit a running Portworx daemon set and add this new field.
 
 ```text
       containers:

@@ -5,7 +5,7 @@ keywords: cloud, backup, restore, snapshot, DR, migration
 hidesections: true
 ---
 
-This section describes Disaster Recovery (DR) options between *multiple* Kubernetes clusters when using Portworx.
+This section describes the different methods for achieving Disaster Recovery (DR) between *multiple* Kubernetes clusters when using Portworx.
 
 There are 2 primary options for this:
 
@@ -25,7 +25,7 @@ You should use this option when:
 * Nodes in all your Kubernetes clusters are in the same **Metro Area Network** ([MAN](https://en.wikipedia.org/wiki/Metropolitan_area_network)). These could be nodes that are in
   * The same cloud region. They can be in different zones.
   * The same datacenter or datacenters that are just 50 miles apart.
-* The network latency between the nodes is lower than ~500ms.
+* The network latency between the nodes is lower than ~10ms.
 
 ### What
 
@@ -33,7 +33,7 @@ The option has the following characteristics:
 
 * A **single Portworx cluster** that streches across multiple Kubernetes clusters.
 * Portworx installation on all clusters use a common **external key-value store** (e.g etcd).
-* Volumes are automatically **replicated** across the Kubernetes clusters as they shared the same Portworx fabric.
+* Volumes are automatically **replicated** across the Kubernetes clusters as they shared the same Portworx storage fabric.
 
 
 ### How
