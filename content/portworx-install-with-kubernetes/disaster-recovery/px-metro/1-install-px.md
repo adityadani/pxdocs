@@ -13,24 +13,22 @@ The goal of this document is to setup a single Portworx cluster that spans acros
 * **Secret Store** : Make sure you have configured a [secret store](/key-management) on both your clusters. This will be used to store the credentials for the objectstore.
 * **Network Connectivity**: Ports between 9001 and 9020 should be open between the two Kubernetes clusters.
 * **External Kvdb**: A kvdb like etcd or consul setup outside of the Kubernetes clusters.
-* **Stork helper** : `storkctl` is a command-line tool for interacting with a set of scheduler extensions.
+* **Stork helper**: `storkctl` is a command-line tool for interacting with a set of scheduler extensions.
 {{% content "portworx-install-with-kubernetes/disaster-recovery/shared/stork-helper.md" %}}
 
 ## Installing Portworx
-In this mode of operation, a single Portworx cluster will stretch across multiple Kubernetes clusters. To install Portworx on each of these Kubernetes clusters, you will need to generate
-a separate Portworx Kubernetes manifest file for each of them using [Portworx Spec Generator]((https://edge-install.portworx.com/))
+In this mode of operation, a single Portworx cluster will stretch across multiple Kubernetes clusters. To install Portworx on each of these Kubernetes clusters, you will need to generate a separate Portworx Kubernetes manifest file for each of them using [Portworx Spec Generator]((https://edge-install.portworx.com/))
 
 While generating the spec file for each Kubernetes cluster, make sure you provide the same values for the following arguments:
 
 * **Cluster ID** (Portworx install argument: `-c`)
 * **Kvdb Endpoints**  (Portworx install argument: `-k`)
 
-Specifying the same **ClusterID** and **Kvdb Endpoints** in each Kubernetes manifest file ensures that a single Portworx cluster will stretch across multiple of your Kubernetes clusters.
+Specifying the same **ClusterID** and **Kvdb Endpoints** in each Kubernetes manifest file ensures that a single Portworx cluster will stretch across multiple Kubernetes clusters.
 
 
 ### Specifying cluster domain
-A cluster domain identifies a subset of nodes from the stretch Portworx cluster that are a part of the same failure domain. In this case your Kubernetes 
-clusters are separated across a metropolitan area network and we wish to achieve DR across them. So each Kubernetes cluster and its nodes are one cluster domain. This cluster domain
+A cluster domain identifies a subset of nodes from the stretch Portworx cluster that are a part of the same failure domain. In this case, your Kubernetes clusters are separated across a metropolitan area network and we wish to achieve DR across them. So each Kubernetes cluster and its nodes are one cluster domain. This cluster domain
 information needs to be explicitly specified to Portworx through the `-cluster_domain` install argument.
 
 Once you have generated the Kubernetes manifest file, add the `cluster_domain` argument in the args section of the daemonset
@@ -66,6 +64,9 @@ Once the Kubernetes manifest is applied on both the clusters, Portworx will form
 
 ```text
 kubectl get nodes -o wide
+```
+
+```
 ip-172-20-33-100.ec2.internal   Ready     node      3h        v1.11.9   18.205.7.13      Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
 ip-172-20-36-212.ec2.internal   Ready     node      3h        v1.11.9   18.213.118.236   Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
 ip-172-20-48-24.ec2.internal    Ready     master    3h        v1.11.9   18.215.34.139    Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
@@ -76,6 +77,9 @@ ip-172-20-59-248.ec2.internal   Ready     node      3h        v1.11.9   34.200.2
 
 ```text
 kubectl get nodes -o wide
+```
+
+```
 ip-172-40-34-140.ec2.internal   Ready     node      3h        v1.11.9   34.204.2.95     Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
 ip-172-40-35-23.ec2.internal    Ready     master    3h        v1.11.9   34.238.44.60    Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
 ip-172-40-40-230.ec2.internal   Ready     node      3h        v1.11.9   52.90.187.179   Debian GNU/Linux 9 (stretch)   4.9.0-7-amd64    docker://17.3.2
@@ -85,7 +89,10 @@ ip-172-40-50-47.ec2.internal    Ready     node      3h        v1.11.9   3.84.27.
 A single Portworx cluster running across both the Kubernetes clusters
 
 ```
-# kubectl exec -it portworx-d6rk7 -n kube-system /opt/pwx/bin/pxctl status
+kubectl exec -it portworx-d6rk7 -n kube-system /opt/pwx/bin/pxctl status
+```
+
+```
 Status: PX is operational
 License: Trial (expires in 31 days)
 Node ID: 04de0858-4081-47c3-a2ab-f0835b788738
@@ -114,12 +121,11 @@ Cluster Summary
 Global Storage Pool
         Total Used      :  0 B
         Total Capacity  :  900 GiB
-root@aditya-dev:~/kops#
 ```
 
-### Cluster Domains Status 
+### Cluster Domains Status
 
-When stork is deployed along with Portworx in this mode it automatically creates a ClusterDomainStatus object. This can be used to find out the current state of all the cluster domains.
+When Stork is deployed along with Portworx in this mode it automatically creates a ClusterDomainStatus object. This can be used to find out the current state of all the cluster domains.
 Each Kubernetes cluster where Stork is deployed will have this object automatically created. You can use the following commands to get the current status:
 
 ```text

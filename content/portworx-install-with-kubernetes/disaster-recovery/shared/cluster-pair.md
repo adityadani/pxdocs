@@ -8,17 +8,20 @@ It is generated and used in the following way:
 
 #### Generate ClusterPair on the destination cluster
 
-To generate the **ClusterPair** spec, run the following command on the **destination** cluster
+To generate the **ClusterPair** spec, run the following command on the **destination** cluster:
 
-```bash
+```text
 storkctl generate clusterpair -n migrationnamespace remotecluster
 ```
 Here, the name (remotecluster) is the Kubernetes object that will be created on the **source** cluster representing the pair relationship.
 
-During the actual migration, you will reference this name to identify the destination of your migration
+During the actual migration, you will reference this name to identify the destination of your migration:
+
+```text
+storkctl generate clusterpair -n migrationnamespace remotecluster
+```
 
 ```
-$ storkctl generate clusterpair -n migrationnamespace remotecluster
 apiVersion: stork.libopenstorage.org/v1alpha1
 kind: ClusterPair
 metadata:
