@@ -34,15 +34,19 @@ spec:
 
 In order to invoke from command-line, run the following:
 
-```
-# kubectl create -f clusterdomainupdate.yaml
-clusterdomainupdate "deactivate-us-east-1a-2" created
+```bash
+kubectl create -f clusterdomainupdate.yaml
 ```
 
-You can run the above command on any Kubernetes cluster which is alive. To validate that the command has succeeded you can check the status of all the cluster domains using storkctl
+You can run the above command on any Kubernetes cluster which is alive. To validate that the command has succeeded you can check the status of all the cluster domains using `storkctl`
+
+```bash
+storkctl get clusterdomainsstatus
+```
+
+When a domain gets successfully deactivated the above command should return this:
 
 ```
-# storkctl get clusterdomainsstatus
 NAME            ACTIVE         INACTIVE       CREATED
 px-dr-cluster   [us-east-1b]   [us-east-1a]   09 Apr 19 17:12 PDT
 ```
@@ -56,9 +60,8 @@ If your source Kubernetes cluster is still alive and is accessible, we recommend
 You can stop the applications from running by changing the replica count of your deployments and statefulsets to 0. In this way, your application resources will persist
 in Kubernetes, but the actual application would not be running.
 
-```
-# kubectl scale --replicas 0 deployment/mysql -n migrationnamespace
-deployment "mysql" scaled
+```text
+kubectl scale --replicas 0 deployment/mysql -n migrationnamespace
 ```
 
 ### Start the application on the destination cluster
@@ -72,10 +75,11 @@ Once the replica count is updated, the application would start running, and the 
 
 You can use the following command to scale the application
 
+```text
+kubectl scale --replicas 1 deployment/mysql -n migrationnamespace
 ```
-# kubectl scale --replicas 1 deployment/mysql -n migrationnamespace
-deployment "mysql" scaled
-```
+
+You can also use `storkctl activate migration -n migrationnamespace` which will look for that annotation and scale it to the correct number automatically
 
 
 ```

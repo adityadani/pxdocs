@@ -5,14 +5,15 @@ keywords: cloud, backup, restore, snapshot, DR, migration, px-motion
 description: Find out how to failback an application from the backup Kubernetes cluster to the original one.
 ---
 
-Once your unhealthy Kubernetes cluster is back up and running, you would want to failback all the applications that were originally running on it
+Once your unhealthy Kubernetes cluster is back up and running, the Portworx nodes in that cluster will not immediately rejoin the cluster. They will stay in 
+`Out of Quorum` state until you explicitly **Activate** this Cluster Domain. 
+
+After this domain is marked as **Active** you can failback the applications if you want.
 
 For this section we will refer to,
 
 * **Source Cluster** as the Kubernetes cluster which is back online and where your applications need to failback to. (In this example: `cluster_domain: us-east-1a`)
 * **Destination Cluster** as the Kubernetes cluster where the applications will be failed over. (In this example: `cluster_domain: us-east-1b`)
-
-In order to failback the application, you need to instruct Stork and Portworx that your source Kubernetes cluster is now back up and is active
 
 ### Create a ClusterDomainUpdate CRD
 

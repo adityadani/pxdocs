@@ -1,14 +1,14 @@
 ---
-title: "2. Pair the Kubernetes clusters and migrate resources between them"
+title: "2. Pair the Kubernetes clusters and synchronize resources between them"
 weight: 2
 keywords: cloud, backup, restore, snapshot, DR, migration, px-motion
-description: Find out how to pair your clusters and migrate Kubernetes resources between them
+description: Find out how to pair your clusters and synchronize Kubernetes resources between them
 ---
 
 ## Pairing clusters
 In order to failover an application running on one Kubernetes cluster to another Kubernetes cluster, we need to migrate the resources between them.
-On Kubernetes you will define a trust object required to communicate with the other Kubernetes cluster called a ClusterPair. This creates a pairing between the scheduler (Kubernetes) so all the Kubernetes resources, 
-can be migrated between them. Throughout this section, the notion of source and destination clusters apply only at the Kubernetes level and does not apply to Storage, as you have a single Portworx storage fabric running on both the clusters.
+On Kubernetes you will define a trust object required to communicate with the other Kubernetes cluster called a ClusterPair. This creates a pairing between the scheduler (Kubernetes) so that all the Kubernetes resources can be migrated between them.
+Throughout this section, the notion of source and destination clusters apply only at the Kubernetes level and does not apply to Storage, as you have a single Portworx storage fabric running on both the clusters.
 As Portworx is stretched across them, the volumes do not need to be migrated. 
 
 For reference,
@@ -19,23 +19,26 @@ For reference,
 {{% content "portworx-install-with-kubernetes/disaster-recovery/shared/cluster-pair.md" %}}
 
 In the generated **ClusterPair** spec, you will see an unpopulated *options* section. It expects options that are required to pair Storage. However, as we have a single storage fabric, this section is not needed.
-You can delete the line `<insert_storage_options_here>` and proceed ahead.
-You should delete the line <insert_storage_options_here> and save this to a file called clusterpair.yaml on the source cluster.
+You should delete the whole <insert_storage_options_here> section and save this to a file called clusterpair.yaml on the source cluster.
 
 #### Apply the generated ClusterPair on the source cluster
 
 On the **source** cluster create the clusterpair by applying the generated spec.
-```
-$ kubectl apply -f clusterpair.yaml
-clusterpair.stork.libopenstorage.org/remotecluster created
+
+```text
+kubectl apply -f clusterpair.yaml
 ```
 
 ### Verify the Pair status
-Once you apply the above spec on the source cluster you should be able to check the status of the pairing. On a successful pairing, you should
-see the "Storage Status" and "Scheduler Status" as "Ready" using storkctl on the
-source cluster:
+Once you apply the above spec on the source cluster you should be able to check the status of the pairing using storkctl on the source cluster. 
+
+```text
+storkctl get clusterpair
 ```
-$ storkctl get clusterpair
+
+On a successful pairing you should see the "Scheduler Status" as "Ready" and the "Storage Status" as "Not Provided"
+
+```
 NAME               STORAGE-STATUS   SCHEDULER-STATUS   CREATED
 remotecluster      NotProvided      Ready              09 Apr 19 18:16 PDT
 ```
@@ -85,18 +88,14 @@ A few things to note:
 
 
 Next, you can invoke this migration manually from the command line:
-be user invoked. In order to invoke from the command-line, run the following
-steps:
 
 ```text
 kubectl apply -f migration.yaml
 ```
 
-#### Using storkctl
 or automate it through `storkctl`:
-```
-$ storkctl create migration mysqlmigration --clusterPair remotecluster --namespaces migrationnamespace --includeResources -n migrationnamespace
-Migration mysqlmigration created successfully
+```text
+storkctl create migration mysqlmigration --clusterPair remotecluster --namespaces migrationnamespace --includeResources -n migrationnamespace
 ```
 
 #### Migration scope
@@ -109,9 +108,14 @@ cluster. Instructions for setting this admin namespace to stork can be found
 ### Monitoring Migration
 Once the migration has been started using the above step, you can check the status of the migration using storkctl
 
-The Stages of migration will go from Application→Final if successful.
+The Stages of migration will go from Application→Final if successful. To get the current status of migration run the following command:
+
+```text
+storkctl get migration -n migrationnamespace
 ```
-$ storkctl get migration -n migrationnamespace
+
+After a successful migration, you should see the following output
+```
 NAME             CLUSTERPAIR     STAGE     STATUS       VOLUMES   RESOURCES   CREATED               ELAPSED
 mysqlmigration   remotecluster   Final     Successful   0/0       9/9         09 Apr 19 19:45 PDT   19s
 ```

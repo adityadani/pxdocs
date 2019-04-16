@@ -1,11 +1,11 @@
 ---
-title: "1. Install single Portworx cluster across multiple Kubernetes clusters"
+title: "1. Prepare your Portworx Cluster"
 weight: 1
 keywords: cloud, backup, restore, snapshot, DR, migration, px-motion
 description: Find out how to install a single stretch Portworx cluster across multiple Kubernetes clusters.
 ---
 
-The goal of this doc is to setup a single Portworx cluster that spans across multiple Kubernetes clusters.
+The goal of this document is to setup a single Portworx cluster that spans across multiple Kubernetes clusters.
 
 ## Pre-requisites
 * **Kubernetes Clusters**: You should have at least two Kubernetes clusters which are a part of the same metropolitan area network with a network latency of 500ms between them.
@@ -25,11 +25,11 @@ While generating the spec file for each Kubernetes cluster, make sure you provid
 * **Cluster ID** (Portworx install argument: `-c`)
 * **Kvdb Endpoints**  (Portworx install argument: `-k`)
 
-Specifying the same **ClusterID** and **Kvdb Endpoints** in each Kubernetes manifest file, ensures that a single Portworx cluster will stretch across multiple of your Kubernetes clusters.
+Specifying the same **ClusterID** and **Kvdb Endpoints** in each Kubernetes manifest file ensures that a single Portworx cluster will stretch across multiple of your Kubernetes clusters.
 
 
 ### Specifying cluster domain
-A cluster domain identifies a subset of nodes from the stretch Portworx cluster, that are a part of the same failure domain. In this case your Kubernetes 
+A cluster domain identifies a subset of nodes from the stretch Portworx cluster that are a part of the same failure domain. In this case your Kubernetes 
 clusters are separated across a metropolitan area network and we wish to achieve DR across them. So each Kubernetes cluster and its nodes are one cluster domain. This cluster domain
 information needs to be explicitly specified to Portworx through the `-cluster_domain` install argument.
 
@@ -52,7 +52,7 @@ The value for `cluster_domain` needs to be different for each Kubernetes cluster
   * You can name them based on your cloud provider's zone names such as **us-east-1a**, **us-east-1b**.
 
 {{<info>}}
-Only deploy Portworx in this mode when your Kubernetes clusters are separated by a metropolitan area network with a latency of 500ms or less. It is not recommended to run in this mode if your Kubernetes clusters are across regions like AWS regions `us-east` and `us-west`.
+Only deploy Portworx in this mode when your Kubernetes clusters are separated by a metropolitan area network with a maximum latency of 10ms. It is not recommended to run in this mode if your Kubernetes clusters are across regions like AWS regions `us-east` and `us-west`.
 {{</info>}}
 
 A cluster domain and, in turn, the set of nodes which are a part of that domain are associated with either of the following states:
@@ -119,19 +119,29 @@ root@aditya-dev:~/kops#
 
 ### Cluster Domains Status 
 
-When stork is deployed with Portworx enabled with cluster domains it creates a new ClusterDomainsStatus CRD object. This can be used to find out the current state of all the cluster domains.
+When stork is deployed along with Portworx in this mode it automatically creates a ClusterDomainStatus object. This can be used to find out the current state of all the cluster domains.
 Each Kubernetes cluster where Stork is deployed will have this object automatically created. You can use the following commands to get the current status:
 
+```text
+storkctl get clusterdomainsstatus
 ```
-# storkctl get clusterdomainsstatus
+
+For the above Portworx cluster, `storkctl` will return the following output
+
+```
 NAME            ACTIVE                    INACTIVE   CREATED
 px-dr-cluster   [us-east-1a us-east-1b]   []         09 Apr 19 17:12 PDT
 ```
 
 You can also use `kubectl` to inspect the ClusterDomainsStatus object
 
+```text
+kubectl describe clusterdomainsstatus -n kube-system
 ```
-# kubectl describe clusterdomainsstatus -n kube-system
+
+The output of the above `kubectl` command looks like this:
+
+```
 Name:         px-dr-cluster
 Namespace:
 Labels:       <none>

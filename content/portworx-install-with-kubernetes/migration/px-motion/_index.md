@@ -27,6 +27,12 @@ On Kubernetes you will define a trust object required to communicate with the de
 with the storage driver (Portworx) as well as the scheduler (Kubernetes) so that the volumes and resources, can be migrated between
 clusters.
 
+### Get cluster token from destination cluster
+On the destination cluster, run the following command from one of the Portworx nodes to get the cluster token:
+```bash
+pxctl cluster token show
+```
+
 {{% content "portworx-install-with-kubernetes/disaster-recovery/shared/cluster-pair.md" %}}
 
 
