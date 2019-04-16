@@ -1,5 +1,6 @@
 ### Troubleshooting
-If the status is in error state you can describe the clusterpair to get more information
+If the status is in error state you can describe the clusterpair to get more information by running:
+
 ```text
 kubectl describe clusterpair remotecluster
 ```

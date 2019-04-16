@@ -35,9 +35,10 @@ The option has the following characteristics:
 * Portworx installation on all clusters use a common **external key-value store** (e.g etcd).
 * Volumes are automatically **replicated** across the Kubernetes clusters as they shared the same Portworx fabric.
 
+
 ### How
 
-Click on the section below for instructions on how to setup this option. 
+Click on the section below for instructions on how to setup this option.
 
 {{< widelink url="/portworx-install-with-kubernetes/disaster-recovery/px-metro" >}}How to setup Synchronous DR{{</widelink>}}
 

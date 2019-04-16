@@ -1,7 +1,12 @@
 ### Troubleshooting
 If there is a failure or you want more information about what resources were migrated you can describe the migration object using kubectl:
+```text
+kubectl describe migration mysqlmigration
 ```
-$ kubectl describe migration mysqlmigration
+
+The output would look something like this:
+
+```
 Name:         mysqlmigration
 Namespace:    migrationnamespace
 Labels:       <none>
