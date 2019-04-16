@@ -9,12 +9,12 @@ This section describes Disaster Recovery (DR) options between *multiple* Kuberne
 
 There are 2 primary options for this:
 
-1. Nodes are in the *same* region/datacenter
+1. Nodes are in the *same* Metro Area Network ([MAN](https://en.wikipedia.org/wiki/Metropolitan_area_network))
 2. Nodes are across *different* regions/datacenters
 
 Choosing between these options depends on how your cluster nodes are laid out. Below section helps you make that choice.
 
-## 1. Nodes are in the same region/datacenter
+## 1. Nodes are in the Metro Area Network (MAN)
 
 ![Portworx metro overview](/img/px-metro-overview.png)
 
@@ -22,16 +22,18 @@ Choosing between these options depends on how your cluster nodes are laid out. B
 
 You should use this option when:
 
-* Nodes in all your Kubernetes clusters are in the same region or datacenter. They could reside in separate zones or racks.
-* The network latency between the nodes is low. Low here is defined as network latencies lower than 500ms.
+* Nodes in all your Kubernetes clusters are in the same **Metro Area Network** ([MAN](https://en.wikipedia.org/wiki/Metropolitan_area_network)). These could be nodes that are in
+  * The same cloud region. They can be in different zones.
+  * The same datacenter or datacenters that are just 50 miles apart.
+* The network latency between the nodes is lower than ~500ms.
 
 ### What
 
 The option has the following characteristics:
 
-* A single Portworx cluster that streches across multiple Kubernetes clusters.
-* Portworx installation on all clusters use a common external key-value store (e.g etcd).
-* Volumes are automatically replicated across the Kubernetes clusters as they shared the same Portworx fabric.
+* A **single Portworx cluster** that streches across multiple Kubernetes clusters.
+* Portworx installation on all clusters use a common **external key-value store** (e.g etcd).
+* Volumes are automatically **replicated** across the Kubernetes clusters as they shared the same Portworx fabric.
 
 ### How
 
@@ -62,4 +64,4 @@ The option has the following characteristics:
 
 Click on the section below to instructions on how to setup this option.
 
-{{< widelink url="/portworx-install-with-kubernetes/disaster-recovery/px-metro" >}}How to setup Asynchronous DR{{</widelink>}}
+{{< widelink url="/portworx-install-with-kubernetes/disaster-recovery/async-dr" >}}How to setup Asynchronous DR{{</widelink>}}
