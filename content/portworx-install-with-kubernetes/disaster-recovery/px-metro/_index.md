@@ -1,8 +1,8 @@
 ---
-title: "Synchronous DR"
-linkTitle: "Synchronous DR"
+title: Synchronous DR
+linkTitle: Synchronous DR
 keywords: cloud, backup, restore, snapshot, DR, migration, px-metro
-description: How to achieve DR across two kubernetes cluster spanning a metropolitan area network with a single stretch Portworx cluster.
+description: How to achieve DR across two Kubernetes clusters spanning a Metropolitan Area Network (MAN)
 ---
 
 Portworx supports synchronous DR when installed as a single stretch cluster across multiple Kubernetes clusters. The Kubernetes clusters need to span across a metropolitan area network with a maximum latency of 10ms.
