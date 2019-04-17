@@ -114,8 +114,7 @@ __Generating self-signed tokens:__
 
 `pxctl` allows you to generate self-signed tokens in a few different ways:
 ECDSA, RSA, and Shared-Secret. In addition to these parameters, you must pass an
-issuer and `authconfig.yaml`. See below for an example with configuration
-`authconfig.yaml`.
+issuer and a YAML configuration file:
 
 ```text
 pxctl auth token generate --auth-config=<authconfig.yaml> --issuer <issuer> \
