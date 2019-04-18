@@ -81,9 +81,11 @@ When authorization is enabled, Portworx itself will generate its own tokens to
 secure communications in the cluster. For this reason, you will be asked to
 provide a shared secret for the system.
 
-_Note: This may be replaced by the installer for your container orchestrator.
+{{<info>}}
+This may be replaced by the installer for your container orchestrator.
 Please see your container orchestrator authorization installation instructions
-for more information_
+for more information
+{{</info>}}
 
 ## Verification of a token authority
 To confirm that a token has the correct information, create a token using your
@@ -102,6 +104,7 @@ ip>:9021/sdk` depending if TLS has been enabled for your Portworx system or not.
 Once the page has loaded, click on the `Authorize` button, and paste your token.
 You can then execute a set of APIs to confirm the token access.
 
-_Note: The default port of `9021` for the SDK REST Gateway may have been moved
-to another port range.  Please consult your Portworx installation._
-
+{{<info>}}
+The default port of `9021` for the SDK REST Gateway may have been moved
+to another port range.  Please consult your Portworx installation.
+{{</info>}}

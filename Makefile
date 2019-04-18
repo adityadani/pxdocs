@@ -3,6 +3,7 @@ SEARCH_INDEX_IMAGE?=pxdocs-search-index:developer
 DEPLOYMENT_IMAGE?=pxdocs-deployment:developer
 PORT=1313
 CONTAINER_NAME=pxdocs-develop
+DOCKER_EXTRA_ARGS=
 
 .PHONY: image
 image:
@@ -22,15 +23,15 @@ deployment-image:
 
 .PHONY: update-theme
 update-theme:
-	git submodule init 
-	git submodule update 
-	git submodule foreach git checkout master 
-	git submodule foreach git pull origin master 
+	git submodule init
+	git submodule update
+	git submodule foreach git checkout master
+	git submodule foreach git pull origin master
 
 .PHONY: develop
 develop: image
 	docker run -ti --rm \
-		-d \
+		$(DOCKER_EXTRA_ARGS) \
 		--name $(CONTAINER_NAME) \
 		-e VERSIONS_ALL \
 		-e VERSIONS_CURRENT \
