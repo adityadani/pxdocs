@@ -20,7 +20,7 @@ Peruse [this section](https://www.vaultproject.io/docs/install) for help on sett
 Portworx requires the following Vault credentials to use its APIs
 
 
-- **Vault Address[VAULT_ADDR]**
+- **Vault Address [VAULT_ADDR]**
 
     Address of the Vault server expressed as a URL and port, for example: `https://192.168.11.11:8200`
 
