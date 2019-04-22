@@ -117,7 +117,7 @@ spec:
           client-certificate-data: <CLIENT_CERT_DATA>
           client-key-data: <CLIENT_KEY_DATA>
   options:
-      ip: <ip-address-of-node-in-the-destination-cluster>
+      ip: <ip_of_remote_px_node>
       port: <port_of_remote_px_node_default_9001>
       token: <token_generated_from_destination_cluster>>
 status:
@@ -125,12 +125,6 @@ status:
   schedulerStatus: ""
   storageStatus: ""
 ```
-
-{{<info>}}
-Port number should be enclosed in quotes.
-{{</info>}}
-
-
 Copy and save this to a file called `clusterpair.yaml` on the source cluster.
 
 ### Creating the ClusterPair
