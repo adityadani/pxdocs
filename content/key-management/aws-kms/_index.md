@@ -21,22 +21,39 @@ There are multiple ways in which you can setup Portworx so that it gets authenti
 
 Following are the authentication details required by Portworx to use the AWS KMS service
 
-- `AWS_ACCESS_KEY_ID` : [required] AWS Access Key ID
-- `AWS_SECRET_ACCESS_KEY` : [required] AWS Secret Access Key
-- `AWS_SECRET_TOKEN_KEY` : [optional] AWS Secret Token Key
-- `AWS_CMK` : [required] AWS Customer Master Key.
-   The CMK can be found out from AWS's resource ARN. Here is an example ARN for CMK: ```arn:aws:kms:us-east-1::key/<cmk-id>```
-   It specifies that the ARN is for the `kms` service for `us-east-1` region. The trailing ID at the end of ARN is the actual CMK that needs to be provided to Portworx
-   through the `AWS_CMK` field.
-- `AWS_REGION` : [required] The AWS region to which the CMK is associated to. CMKs are region specific and cannot be used across regions.
+- **AWS Access Key [AWS_ACCESS_KEY_ID]** [required]
 
-## Using AWS environment variables
+    AWS Access Key ID of the account which has permissions to access KMS APIs
+
+- **AWS Secret Key [AWS_SECRET_ACCESS_KEY]** [required] 
+
+    AWS Secret Access Key of the account which has permissions to access KMS APIs
+
+- **AWS Secret Token Key [AWS_SECRET_TOKEN_KEY]** [optional]
+
+    AWS Secret Token Key (if configured) of the account which has permissions to access KMS APIs
+
+- **AWS Customer Master Key [AWS_CMK]** [required]
+
+    AWS Customer Master Key.
+    The CMK can be found out from AWS's resource ARN. Here is an example ARN for CMK: 
+    ```
+        arn:aws:kms:us-east-1::key/<cmk-id>
+    ```
+    It specifies that the ARN is for the `kms` service for `us-east-1` region. 
+    The trailing ID at the end of ARN is the actual CMK that needs to be provided to Portworx through the `AWS_CMK` field.
+
+- **AWS Region of the CMK [AWS_REGION]**  [required]
+
+    The AWS region to which the CMK is associated to. CMKs are region specific and cannot be used across regions.
+
+### Using AWS environment variables
 
 Portworx can authenticate with AWS using AWS SDK’s EnvProvider.
 
-Each of the above fields can be provided as is to Portworx through environment variables.
+Each of the above fields can be provided as is to Portworx as environment variables.
 
-### Kubernetes users
+#### Kubernetes users
 
 If you are installing Portworx on Kubernetes, when generating the Portworx Kubernetes spec file on https://install.portworx.com/ :
 
@@ -48,7 +65,7 @@ If you are installing Portworx on Kubernetes, when generating the Portworx Kuber
 
 If you already have a running Portworx installation, update `/etc/pwx/config.json` on each node.
 
-### Other users
+#### Other users
 
 During installation,
 
@@ -57,34 +74,7 @@ During installation,
 
 If you already have a running Portworx installation, update `/etc/pwx/config.json` on each node.
 
-## Adding AWS KMS Credentials to config
-
-{{<info>}}
-**Note:** This section is optional and is only needed if you intend to provide the Portworx configuration before installing Portworx.
-{{</info>}}
-
-If you are deploying PX with your PX configuration created before hand, then add the following `secrets` section to the `/etc/pwx/config.json`:
-
-```text
-cat /etc/pwx/config.json
-```
-```
-{
-    "clusterid": "<cluster-id>",
-    "secret": {
-        "secret_type": "aws-kms",
-        "aws": {
-             "AWS_ACCESS_KEY_ID": "your-access-key-id",
-             "AWS_SECRET_ACCESS_KEY": "your-secret-access-key",
-             "AWS_CMK": "your-customer-master-key-id",
-             "AWS_REGION": "you-aws-region-to-which-this-cmk-belongs"
-        },
-    }
-    ...
-}
-```
-
-## Using AWS EC2 Role Credentials {#using-aws-ec2-role-credentials}
+### Using AWS EC2 Role Credentials {#using-aws-ec2-role-credentials}
 
 Portworx can authenticate with AWS using AWS SDK’s EC2RoleCredentials Provider. Follow [these](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html) instructions to create an EC2 role. Make sure you provide the following access to KMS in your policy associated with EC2 role.
 
@@ -109,7 +99,8 @@ Here is a sample AWS Policy that gives access to KMS
 
 Apply EC2 role to all the AWS instances where Portworx will be running.
 
-Along with the EC2 role you will still need to provide `AWS_CMK` and `AWS_REGION` through config.json
+Along with the EC2 role you will still need to provide `AWS_CMK` and `AWS_REGION` either through config.json or as environment variables. To provide them through config.json add the following section to the config.json on all the nodes
+
 ```text
 cat /etc/pwx/config.json
 ```
@@ -127,50 +118,6 @@ cat /etc/pwx/config.json
 }
 ```
 
-## Using PX CLI to authenticate with AWS {#using-px-cli-to-authenticate-with-aws}
+## Using AWS KMS with Portworx
 
-If you do not wish to set AWS environment variables, you can authenticate PX with AWS using PX CLI. Run the following commands:
-
-```text
-pxctl secrets aws login \
-      --aws_access_key <aws-access-key>
-      --aws_secret_key <aws-secret-key>
-      --aws_cmk <aws-cmk>
-      --aws_region <aws-region>
-```
-
-{{<info>}}
-**Important**: You need to run this command on all PX nodes, so that you could create and mount encrypted volumes on all nodes
-{{</info>}}
-
-If the CLI is used to authenticate with AWS, for every restart of PX container it needs to be re-authenticated by running the `aws login` command.
-
-## Key generation with AWS KMS {#key-generation-with-aws-kms}
-
-The following sections describe the key generation process with PX and AWS KMS. These keys can be used as passphrases for encrypted volumes. For more information on encrypted volumes, [click here](/reference/cli/encrypted-volumes).
-
-Portworx provides CLI commands to generate AWS KMS Data keys. Portworx associates each KMS Data Key with a unique name provided through the ```--secret_id``` argument.
-
-To generate a new KMS Data Key run the following command:
-
-```text
-/opt/pwx/bin/pxctl secrets aws generate-kms-data-key --secret_id portworx_secret
-```
-
-The above command generates a KMS Data Key and associates it with the name ```portworx_secret```. For any subsequent operations that require a secret you can use this name ```portworx_secret```
-
-Run the following command to create an encrypted volume using the newly generated KMS Data Key.
-
-```text
-/opt/pwx/bin/pxctl volume create --secure --secret_key portworx_secret --size 20 encrypted_volume
-```
-
-### Setting cluster wide secret key {#setting-cluster-wide-secret-key}
-
-A cluster wide secret key is a common key that can be used to encrypt all your volumes. You can set the cluster secret key using the following command
-
-```text
-/opt/pwx/bin/pxctl secrets set-cluster-key --secret portworx_secret
-```
-
-You can provide any ```--secret_id``` that was used in the ```generate-kms-data-key``` command as the `--secret` argument to the above command.. From our example we can set the cluster secret key to ```portworx_secret```. This command needs to be run just once for the cluster.
+{{<homelist series="aws-secret-uses">}}
