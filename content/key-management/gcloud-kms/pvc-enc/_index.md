@@ -11,7 +11,6 @@ hidden: true
 
 {{% content "key-management/shared/intro.md" %}}
 
-
 ### Encryption using per volume secrets
 
 In this method each volume will use its own unique passphrase to encrypt the volume. Portworx generates a  unique 128 bit passphrase. This passphrase will be used during encryption and decryption. If you do not wish Portworx to generate passphrases for you, use named secrets as mentioned [here](/key-management/gcloud-kms/pvc-enc#encryption-using-named-secrets)
@@ -94,16 +93,23 @@ Take a note of the annotation `px/secret-name: default`. This specific annotatio
 
 Again, if your Storage Class does not have the `secure` flag set, but you want to encrypt the PVC using the same Storage Class, then add the annotation `px/secure: "true"` to the above PVC.
 
+{{<info>}}
+{{% content  "key-management/shared/shared-secret-warning-note.md" %}}
+{{</info>}}
 
 ### Encryption using named secrets
 
 In this method Portworx will use the named secret created by you for encrypting and decrypting a volume. To create a named secret follow [this](/key-management/gcloud-kms#creating-named-secrets) doc
 
-#### Step 1: Create a Storage Class
+#### Step 1: Create a Named Secret
+
+{{% content "key-management/gcloud-kms/shared/named-secrets.md" %}}
+
+#### Step 2: Create a Storage Class
 
 {{% content "key-management/shared/enc-storage-class-spec.md" %}}
 
-#### Step 2: Create a Persistent Volume Claim
+#### Step 3: Create a Persistent Volume Claim
 
 ```yaml
 kind: PersistentVolumeClaim
@@ -130,3 +136,7 @@ Take a note of the annotation `px/secret-name: mysecret`. This specific annotati
 {{</info>}}
 
 Again, if your Storage Class does not have the `secure` flag set, but you want to encrypt the PVC using the same Storage Class, then add the annotation `px/secure: "true"` to the above PVC.
+
+{{<info>}}
+{{% content  "key-management/shared/shared-secret-warning-note.md" %}}
+{{</info>}}
