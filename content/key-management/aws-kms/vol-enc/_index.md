@@ -14,23 +14,23 @@ hidden: true
 
 ### Using per volume secret keys
 
-In this method each volume will use its own unique passphrase to encrypt the volume. Portworx uses the AWS KMS apis to generate a Data Encryption Key. This key will then be used for enctypting and decrypting your volumes.
+{{% content "key-management/aws-kms/shared/unique-passphrase.md" %}}
 
-To create a volume through pxctl, run the following command
+To create a volume through pxctl, run the following command:
 
+```text
+pxctl volume create --secure  enc_vol
 ```
-/opt/pwx/bin/pxctl volume create --secure  enc_vol
-```
 
-To create a volume through docker, run the following command
+To create a volume through docker, run the following command:
 
-```
+```text
 docker volume create --volume-driver pxd secure=true,name=enc_vol
 ```
 
-To attach and mount an encrypted volume through docker, run the following command
+To attach and mount an encrypted volume through docker, run the following command:
 
-```
+```text
 docker run --rm -it -v secure=true,name=enc_vol:/mnt busybox
 ```
 
@@ -38,7 +38,7 @@ Note that no `secret_key` argument needs to be passed in any of the commands.
 
 ### Using named secret keys
 
-In this method you will create an AWS Data Key and assign it a unique name. This data key will then be used for encrypting volumes. 
+In this method, you will create an AWS Data Key and assign it a unique name. This data key will then be used for encrypting volumes.
 
 {{<info>}}
 {{% content "key-management/aws-kms/shared/warning-note.md" %}}
@@ -52,25 +52,23 @@ In this method you will create an AWS Data Key and assign it a unique name. This
 
 To create a volume using a named secret through pxctl, run the following command
 
-```bash
-/opt/pwx/bin/pxctl volume create --secure --secret_key mysecret enc_vol
-
+```text
+pxctl volume create --secure --secret_key mysecret enc_vol
 ```
 
 To create a volume using a named secret through docker, run the following command
 
-```bash
+```text
 docker volume create --volume-driver pxd secret_key=mysecret,name=enc_vol
-
 ```
 
 To attach and mount the same encrypted volume through docker, run the following command
 
-```
+```text
 docker run --rm -it -v secure=true,secret_key=mysecret,name=enc_vol:/mnt busybox
 ```
 
-### Using cluster wide secret key
+### Using cluster-wide secret key
 
 {{% content "key-management/aws-kms/shared/cluster-wide-intro.md" %}}
 
@@ -80,25 +78,23 @@ docker run --rm -it -v secure=true,secret_key=mysecret,name=enc_vol:/mnt busybox
 
 #### Step2: Use the cluster wide secret for encrypting volumes
 
-To create a volume using a cluster wide secret through pxctl, run the following command
+To create a volume using a cluster-wide secret through pxctl, run the following command
 
-```
-/opt/pwx/bin/pxctl volume create --secure --secret_key default enc_vol
+```text
+pxctl volume create --secure --secret_key default enc_vol
 ```
 
-To create a volume using a cluster wide secret through docker, run the following command
+To create a volume using a cluster-wide secret through docker, run the following command
 
-```
+```text
 docker volume create --volume-driver pxd secret_key=default,name=enc_vol
-
 ```
 
 To attach and mount an encrypted volume through docker, run the following command
 
-```
+```text
 docker run --rm -it -v secure=true,secret_key=default,name=enc_vol:/mnt busybox
 ```
 
 Note the `secret_key` is set to the value `default` to indicate PX to use the cluster-wide secret key
-
-
+Able to withdraw/resume withdrawals.

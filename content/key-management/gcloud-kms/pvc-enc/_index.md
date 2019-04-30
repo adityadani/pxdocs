@@ -13,7 +13,7 @@ hidden: true
 
 ### Encryption using per volume secrets
 
-In this method each volume will use its own unique passphrase to encrypt the volume. Portworx generates a  unique 128 bit passphrase. This passphrase will be used during encryption and decryption. If you do not wish Portworx to generate passphrases for you, use named secrets as mentioned [here](/key-management/gcloud-kms/pvc-enc#encryption-using-named-secrets)
+In this method each volume will use its own unique passphrase for encryption. _Portworx_ generates a  unique 128 bit passphrase. This passphrase will be used during encryption and decryption. If you do not wish _Portworx_ to generate passphrases for you, use named secrets as mentioned [here](/key-management/gcloud-kms/pvc-enc#encryption-using-named-secrets)
 
 #### Step 1: Create a Storage Class
 
@@ -21,7 +21,7 @@ In this method each volume will use its own unique passphrase to encrypt the vol
 
 #### Step 2: Create a Persistent Volume Claim
 
-```yaml
+```text
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -38,9 +38,9 @@ spec:
 
 ```
 
-If you do not want to specify the `secure` flag in the storage class, but you want to encrypt the PVC using that Storage Class, then create the PVC as below
+If you do not want to specify the `secure` flag in the storage class, but you want to encrypt the PVC using that Storage Class, then create the PVC as below:
 
-```yaml
+```text
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -71,7 +71,7 @@ In this method a default cluster wide secret will be set for the Portworx cluste
 
 #### Step 3: Create a Persistent Volume Claim
 
-```yaml
+```text
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -89,9 +89,9 @@ spec:
 
 ```
 
-Take a note of the annotation `px/secret-name: default`. This specific annotation indicates Portworx to use the default secret to encrypt the volume. In this case it will **NOT**  create a new passphrase for this volume and NOT use per volume encryption. If the annotation is not provided then Portworx will use the per volume encryption workflow as described in the previous section.
+{{% content "key-management/aws-kms/shared/px-secret-name-default.md" %}}
 
-Again, if your Storage Class does not have the `secure` flag set, but you want to encrypt the PVC using the same Storage Class, then add the annotation `px/secure: "true"` to the above PVC.
+{{% content "key-management/aws-kms/shared/secure-flag.md" %}}
 
 {{<info>}}
 {{% content  "key-management/shared/shared-secret-warning-note.md" %}}
@@ -99,7 +99,7 @@ Again, if your Storage Class does not have the `secure` flag set, but you want t
 
 ### Encryption using named secrets
 
-In this method Portworx will use the named secret created by you for encrypting and decrypting a volume. To create a named secret follow [this](/key-management/gcloud-kms#creating-named-secrets) doc
+In this method _Portworx_ will use the named secret created by you for encrypting and decrypting a volume. To create a named secret follow [this document](/key-management/gcloud-kms#creating-named-secrets).
 
 #### Step 1: Create a Named Secret
 
@@ -111,7 +111,7 @@ In this method Portworx will use the named secret created by you for encrypting 
 
 #### Step 3: Create a Persistent Volume Claim
 
-```yaml
+```text
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -129,13 +129,13 @@ spec:
 
 ```
 
-Take a note of the annotation `px/secret-name: mysecret`. This specific annotation indicates Portworx to use the named secret `mysecret` generated using the Portworx CLI to encrypt the volume. In this case it will **NOT**  create a new passphrase for this volume. If the annotation is not provided then Portworx will use the per volume encryption workflow as described in the previous sections.
+{{% content "key-management/aws-kms/shared/px-secret-name-default.md" %}}
 
 {{<info>}}
-**NOTE** A single named secret can be used for encrypting multiple volumes.
+A single named secret can be used for encrypting multiple volumes.
 {{</info>}}
 
-Again, if your Storage Class does not have the `secure` flag set, but you want to encrypt the PVC using the same Storage Class, then add the annotation `px/secure: "true"` to the above PVC.
+{{% content "key-management/aws-kms/shared/secure-flag.md" %}}
 
 {{<info>}}
 {{% content  "key-management/shared/shared-secret-warning-note.md" %}}
