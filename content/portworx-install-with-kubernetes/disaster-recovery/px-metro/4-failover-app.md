@@ -1,6 +1,6 @@
 ---
-title: "4. Failover an application"
-weight: 4
+title: "3. Failover an application"
+weight: 3
 keywords: cloud, backup, restore, snapshot, DR, migration, px-motion
 description: Find out how to failover an application from one Kubernetes cluster to another.
 ---
@@ -23,16 +23,26 @@ In order to initiate a failover, we need to first mark the source cluster as ina
 To deactivate a cluster domain run the below command on the destination cluster where Portworx is still running.
 
 ```text
-storkctl deactivate clusterdomain us-east-1a
+storkctl deactivate clusterdomain us-east-1a --wait
 ```
 
-To validate that the command has succeeded you can check the status of all the cluster domains using `storkctl`:
+By providing the `--wait` argument, the above command will wait until the deactivate command succeeds or timeouts. Every 5 seconds, the command will spit out the current state. A sample output of the above command looks like this:
+
+```text
+time="2019-05-20T18:45:41Z" Deactivating cluster domain us-east-1a. Current State: InProgress
+time="2019-05-20T18:45:46Z" Deactivating cluster domain us-east-1a. Current State: InProgress
+time="2019-05-20T18:45:51Z" Deactivating cluster domain us-east-1a. Current State: Failed. Reason: Cannot connect to endpoint.
+time="2019-05-20T18:45:56Z" Deactivating cluster domain us-east-1a. Current State: InProgress
+time="2019-05-20T18:46:01Z" Deactivating cluster domain us-east-1a. Current State: Success
+```
+
+Finally to check the current statuses of all the clusterdomains in your cluster you can run the following command:
 
 ```text
 storkctl get clusterdomainsstatus
 ```
 
-When a domain gets successfully deactivated the above command should return something like this:
+When a domain gets successfully deactivated the above command will show the following output:
 
 ```
 NAME            ACTIVE         INACTIVE       CREATED
@@ -40,83 +50,6 @@ px-dr-cluster   [us-east-1b]   [us-east-1a]   09 Apr 19 17:12 PDT
 ```
 
 You can see that the cluster domain `us-east-1a` is now **Inactive**
-
-#### Using kubectl
-
-If you wish to use `kubectl` instead of `storkctl`, you can create a `ClusterDomainUpdate` object as explained below. If you have already used `storkctl` you can skip this section.
-
-Let's create a new file named `clusterdomainupdate.yaml` that specifies an object called `ClusterDomainUpdate` and designates the cluster domain of the source cluster as inactive:
-
- ```text
-apiVersion: stork.libopenstorage.org/v1alpha1
-kind: ClusterDomainUpdate
-metadata:
- name: deactivate-us-east-1a
- namespace: kube-system
-spec:
-  # Name of the metro domain that needs to be activated/deactivated
-  clusterdomain: us-east-1a
-  # Set to true to activate cluster domain
-  # Set to false to deactivate cluster domain
-  active: false
- ```
-
-In order to invoke from command-line, run the following:
-
-```text
-kubectl create -f clusterdomainupdate.yaml
-```
-
-### Stop the application on the source cluster (if accessible)
-
-If your source Kubernetes cluster is still alive and is accessible, we recommend you to stop the applications before failing them over to the destination cluster.
-
-You can stop the applications from running by changing the replica count of your deployments and statefulsets to 0. In this way, your application resources will persist in Kubernetes, but the actual application would not be running.
-
-```text
-kubectl scale --replicas 0 deployment/mysql -n migrationnamespace
-```
-
-Since the replicas for the mysql deployment are set to 0, we need to suspend the migration schedule on the source cluster. This is done so that the mysql deployment on the target cluster doesn't get updated to 0 replicas.
-
-Apply the below spec. Notice the `suspend: true`.
-
-```text
-apiVersion: stork.libopenstorage.org/v1alpha1
-kind: MigrationSchedule
-metadata:
-  name: mysqlmigrationschedule
-  namespace: migrationnamespace
-spec:
-  template:
-    spec:
-      # This should be the name of the cluster pair created above
-      clusterPair: remotecluster
-      # If set to false this will migrate only the Portworx volumes. No PVCs, apps, etc will be migrated
-      includeResources: true
-      # If set to false, the deployments and stateful set replicas will be set to 0 on the destination.
-      # If set to true, the deployments and stateful sets will start running once the migration is done
-      # There will be an annotation with "stork.openstorage.org/migrationReplicas" on the destinationto store the replica count from the source.
-      startApplications: false
-       # If set to false, the volumes will not be migrated
-      includeVolumes: false
-      # List of namespaces to migrate
-      namespaces:
-      - migrationnamespace
-  schedulePolicyName: testpolicy
-  suspend: true
-```
-
-Using storkctl, verify the schedule is suspended.
-
-```text
-storkctl get migrationschedule -n migrationnamespace
-```
-
-```output
-NAME                        POLICYNAME   CLUSTERPAIR      SUSPEND   LAST-SUCCESS-TIME     LAST-SUCCESS-DURATION
-mysqlmigrationschedule      testpolcy    remotecluster     true      17 Apr 19 15:18 PDT   2m0s
-```
 
 
 ### Start the application on the destination cluster
@@ -128,19 +61,13 @@ Each application spec will have the following annotation `stork.openstorage.org/
 
 Once the replica count is updated, the application would start running, and the failover will be completed.
 
-You can use the following command to scale the application:
-
-```text
-kubectl scale --replicas 1 deployment/mysql -n migrationnamespace
-```
-
-You can also use:
+You can run the following `storkctl` command to do that:
 
 ```text
 storkctl activate migration -n migrationnamespace
 ```
 
-which will look for that annotation and scale it to the correct number automatically.
+`storkctl` will look for that annotation and scale it to the correct number automatically.
 
 Let's make sure our application is up and running. List the pods with:
 

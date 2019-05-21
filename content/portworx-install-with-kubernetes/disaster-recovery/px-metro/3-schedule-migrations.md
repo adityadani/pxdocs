@@ -1,6 +1,7 @@
 ---
 title: "3. Synchronize your Clusters"
-weight: 3
+weight: 6
+hidden: true
 keywords: cloud, backup, restore, snapshot, DR, migration, px-motion
 description: Find out how to synchronize your cluster by scheduling periodic migrations between them
 ---
