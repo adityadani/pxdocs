@@ -23,8 +23,6 @@ In order to initiate a failback, we need to first mark the source cluster as act
 
 Run the following storkctl command to activate the source cluster
 
-`storkctl`:
-
 ```text
 storkctl activate clusterdomain us-east-1a
 ```

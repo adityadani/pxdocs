@@ -20,15 +20,13 @@ In order to initiate a failover, we need to first mark the source cluster as ina
 
 #### Using storkctl
 
-Run the following storkctl command to deactivate the source cluster
-
-`storkctl`:
+To deactivate a cluster domain run the below command on the destination cluster where Portworx is still running.
 
 ```text
 storkctl deactivate clusterdomain us-east-1a
 ```
 
-Run the above command on the destination cluster where Portworx is still running. To validate that the command has succeeded you can check the status of all the cluster domains using `storkctl`:
+To validate that the command has succeeded you can check the status of all the cluster domains using `storkctl`:
 
 ```text
 storkctl get clusterdomainsstatus
