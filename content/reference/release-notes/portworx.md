@@ -6,6 +6,18 @@ keywords: portworx, release notes
 series: release-notes
 ---
 
+## 2.5.1.3
+
+June 05, 2020
+
+## Fixes
+
+The following issues have been fixed:
+
+|**Issue Number**|**Issue Description**|
+|----|----|
+|PWX-13086| For vSphere 6.7.3 and above, create PX disks (vmdks) such that they don't get deleted on VM deletion. |
+
 ## 2.5.2
 
 May 29, 2020
