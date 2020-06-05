@@ -37,3 +37,11 @@ curl -fsL -o px-spec.yaml "https://install.portworx.com/{{% currentVersion %}}?k
 ```
 
 {{% content "shared/portworx-install-with-kubernetes-4-apply-the-spec.md" %}}
+
+## Known issues
+
+### vSphere 6.5
+
+* **Issue**: If you are running on VMware vSphere  6.5 or lower, when you delete a worker node VM, all disks attached to the VM will get deleted. This is the default vSphere behavior. Deletion of the disks will cause Portworx cluster to loose quorum.
+* **Workaround**: Upgrade to vSphere 6.7.3 and use Portworx 2.5.1.3 or higher
+ 
