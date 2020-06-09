@@ -17,6 +17,7 @@ The following issues have been fixed:
 |**Issue Number**|**Issue Description**|
 |----|----|
 |PWX-13086| For vSphere 6.7.3 and above, create PX disks (vmdks) such that they don't get deleted on VM deletion. |
+|PWX-13542| Fixed in issue where PX would fail to come up vSphere using cloud drives when it cannot find the path of the attached disk|
 
 ## 2.5.2
 
