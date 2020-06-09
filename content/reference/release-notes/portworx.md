@@ -18,6 +18,7 @@ The following issues have been fixed:
 |----|----|
 |PWX-13086| For vSphere 6.7.3 and above, create PX disks (vmdks) such that they don't get deleted on VM deletion. |
 |PWX-13542| Fixed in issue where PX would fail to come up vSphere using cloud drives when it cannot find the path of the attached disk|
+|PWX-13510| Added a new runtime option `rt_opts kvdb_failover_timeout_in_mins` to configure kvdb offline node failover timeout. Default value is set to 3 mins|
 
 ## 2.5.2
 
