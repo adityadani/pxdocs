@@ -28,10 +28,6 @@ Portworx requires the following Vault credentials to use its APIs
 
    Vault authentication token. Follow [this](https://www.vaultproject.io/docs/concepts/tokens) doc for more information about Vault Tokens. If you are using Vault's Kubernetes Auth method you won't need to provide the actual token to Portworx.
 
-- **Vault Base Path [VAULT_BASE_PATH]**
-
-    The base path under which Portworx has access to secrets.
-
 - **Vault Backend Path [VAULT_BACKEND_PATH]**
 
     The custom backend path if different than the default `secret`
@@ -169,13 +165,13 @@ vault write auth/kubernetes/role/portworx \
 
 ##### Step 1e: Provide Vault credentials to Portworx
 
-Portworx reads the Vault credentials required to authenticate with Vault through a Kubernetes secret. Create a Kubernetes secret with the name `px-vault` in the `portworx` namespace. You can refer to the following example Kubernetes secret spec when creating yours:
+The Vault credentials required to authenticate with Vault are provided to Portworx through a Kubernetes secret. Create a Kubernetes secret with the name `px-vault` in the `portworx` namespace. You can refer to the following example Kubernetes secret spec when creating yours:
 
 ```text
 apiVersion: v1
 kind: Secret
 metadata:
-  name: px-vault
+  name: vault-credentials
   namespace: portworx
 type: Opaque
 data:
@@ -188,6 +184,31 @@ data:
   VAULT_TLS_SERVER_NAME: <base64 encoded value of the TLS server name>
   VAULT_AUTH_METHOD: a3ViZXJuZXRlcw== // base64 encoded value of "kubernetes"
   VAULT_AUTH_KUBERNETES_ROLE: cG9ydHdvcng= // base64 encoded value of the kubernetes auth role "portworx"
+```
+
+Now update the Portworx DaemonSet or Operator's StorageCluster object to access the contents of this Kubernetes secret as environment variable. 
+You will need to add an environment variable for each of the `VAULT_` parameters specified in the above secret
+
+```text
+    env:
+    - name: VAULT_ADDR
+      valueFrom:
+        secretKeyRef:
+          name: px-vault
+          key: VAULT_ADDR
+    - name: VAULT_BACKEND_PATH
+      valueFrom:
+        secretKeyRef:
+          name: px-vault
+          key: VAULT_BACKEND_PATH
+
+....
+
+    - name: VAULT_AUTH_KUBERNETES_ROLE
+      valueFrom:
+        secretKeyRef:
+          name: px-vault
+          key: VAULT_AUTH_KUBERNETES_ROLE
 ```
 
 {{<info>}}
@@ -280,7 +301,6 @@ Provide the following Vault credentials (key value pairs) as environment variabl
 
 - [Required] VAULT_ADDR=<vault endpoint address>
 - [Required] VAULT_TOKEN=<vault token>
-- [Optional] VAULT_BASE_PATH=<vault base path>
 - [Optional] VAULT_BACKEND_PATH=<custom backend path if different than the default "secret">
 - [Optional] VAULT_CACERT=<file path where the CA Certificate is present on all the nodes>
 - [Optional] VAULT_CAPATH=<file path where the Certificate Authority is present on all the nodes>
@@ -311,7 +331,7 @@ If Vault is configured strictly with policies then the Vault Token provided to P
 
  # V1 backends (Using default backend)
  # Provide full access to the portworx subkey
- # Provide -> VAULT_BASE_PATH=portworx to PX (optional)
+ # Provide -> VAULT_BACKEND_PATH=portworx to PX (optional)
  path "secret/portworx/*"
  {
  capabilities = ["create", "read", "update", "delete", "list"]
@@ -319,8 +339,7 @@ If Vault is configured strictly with policies then the Vault Token provided to P
 
  # V1 backends (Using custom backend)
  # Provide full access to the portworx subkey
- # Provide -> VAULT_BASE_PATH=portworx to PX (optional)
- # Provide -> VAULT_BACKEND_PATH=custom-backend (required)
+ # Provide -> VAULT_BACKEND_PATH=custom-backend/portworx (required)
  path "custom-backend/portworx/*"
  {
  capabilities = ["create", "read", "update", "delete", "list"]
@@ -329,7 +348,7 @@ If Vault is configured strictly with policies then the Vault Token provided to P
 
  # V2 backends (Using default backend )
  # Provide full access to the data/portworx subkey
- # Provide -> VAULT_BASE_PATH=portworx to PX (optional)
+ # Provide -> VAULT_BACKEND_PATH=portworx to PX (optional)
  path "secret/data/portworx/*"
  {
  capabilities = ["create", "read", "update", "delete", "list"]
@@ -337,8 +356,7 @@ If Vault is configured strictly with policies then the Vault Token provided to P
 
  # V2 backends (Using custom backend )
  # Provide full access to the data/portworx subkey
- # Provide -> VAULT_BASE_PATH=portworx to PX (optional)
- # Provide -> VAULT_BACKEND_PATH=custom-backend (required)
+ # Provide -> VAULT_BACKEND_PATH=custom-backend/portworx (required)
  path "custom-backend/data/portworx/*"
  {
  capabilities = ["create", "read", "update", "delete", "list"]
