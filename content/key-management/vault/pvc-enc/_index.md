@@ -45,8 +45,7 @@ __Important: Make sure secret `your-secret-key` exists in Vault__
 
 ### Encryption using PVC annotations with Vault Namespaces
 
-When you have **Vault Namespaces** enabled and your secret resides inside a specific namespace, then the name of that namespace and the secret key needs
-to be provided to Portworx.
+If you have **Vault Namespaces** enabled and your secret resides inside a specific namespace, you must provide the name of that namespace and the secret key to Portworx.
 
 #### Step 1: Create a Storage Class
 
