@@ -41,7 +41,9 @@ In this method, each PVC can be encrypted with its own secret key.
 
 {{% content "shared/key-management-other-providers-pvc-encryption.md" %}}
 
-__Important: Make sure secret `your-secret-key` exists in Vault__
+{{<info>}}
+**IMPORTANT:** Make sure secret `your-secret-key` exists in Vault.
+{{</info>}}
 
 ### Encryption using PVC annotations with Vault Namespaces
 
@@ -74,4 +76,6 @@ The PVC requires an extra annotation `px/vault-namespace` to indicate the Vault 
 set in Portworx using the parameter `VAULT_NAMESPACE`, you don't need to specify this annotation. However if the key resides in any other namespace then this annotation is
 required.
 
-__Important: Make sure secret `your-secret-key` exists in the namespace `your-vault-namespace` in Vault__
+{{<info>}}
+**IMPORTANT:** Make sure the secret `your-secret-key` exists in the namespace `your-vault-namespace` in Vault.
+{{</info>}}
