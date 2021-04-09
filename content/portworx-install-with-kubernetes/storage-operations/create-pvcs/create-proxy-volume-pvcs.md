@@ -27,6 +27,7 @@ You can access a full NFS share in Portworx as a proxy volume. Application using
 **NOTE:** The <!-- optional? --> `nfs:` prefix instructs Portworx to use the NFS protocol for reflecting an external datasource.
     {{</info>}}
   * **parameters.proxy_nfs_exportpath:** With the export path on the NFS server.
+  * **parameters.mount_options:** With the standard linux NFS mount options to use while mounting the NFS share.
 
     ```text
     kind: StorageClass
@@ -37,8 +38,13 @@ You can access a full NFS share in Portworx as a proxy volume. Application using
     parameters:
       proxy_endpoint: "nfs:<nfs-share-endpoint>"
       proxy_nfs_exportpath: "/<mount-path>"
+      mount_options: "vers=4.0"
     allowVolumeExpansion: true
     ```
+
+{{<info>}}
+**NOTE:** The above example uses NFS version 4. You can replace the "vers" field with your desired NFS version.
+{{</info>}}
 
 2. Apply the spec:
 
@@ -214,4 +220,3 @@ You can associate a sub-path of an NFS share with Portworx as a proxy volume. Un
     ```text
     kubectl create -f <pod-name>.yaml
     ```
-
